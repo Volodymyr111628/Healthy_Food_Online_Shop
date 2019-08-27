@@ -1,0 +1,34 @@
+﻿@model HealthyFoodOnlineShop.Models.Catalog.AssetIndexModel
+
+<div class="row">
+    @foreach (var i in Model.Assets)
+    {
+        <div class="item col-md-6 flex-column align-items-center justify-content-center text-center" style="padding:20px 0;">
+            <img src="@i.ImageUrl" alt="" style="width:400px;">
+
+            <h4>@i.Name</h4>
+            @if (i.Discount > 0)
+            {
+                @if (true)
+                {
+                    double q = i.Price * (1 - (double)i.Discount / 100);
+                    <p> <s>@i.Price.ToString("0.##") $</s>   <b style="color:red;">@q.ToString("0.##") $</b></p>
+                };
+
+            }
+            else
+            {
+                <p><b>@i.Price $</b></p>
+            }
+            <a asp-route-id="@i.Id" asp-controller="Catalog" asp-action="Details" class="btn btn-success">Show Info</a>
+        </div>
+    }
+</div>
+
+
+
+
+
+
+
+

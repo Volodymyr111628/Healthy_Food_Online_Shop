@@ -1,0 +1,60 @@
+﻿
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@model HealthyFoodOnlineShop.Models.Catalog.AssetIndexListingModel
+
+
+<div style="text-align:center;display:block; margin-left:auto;margin-right:auto;">
+    <img style="padding-top:20px" src="@Model.ImageUrl" />
+    <h3>@Model.Name</h3>
+    <p>@Model.Description</p>
+    <p>@Model.Country</p>
+
+    @if (Model.Discount > 0)
+    {
+        @if (true)
+        {
+            double q = Model.Price * (1 - (double)Model.Discount / 100);
+            <p> <s>@Model.Price.ToString("0.##") $</s> :  <b style="color:red;">@q.ToString("0.##") $</b></p>
+        };
+
+    }
+    else
+    {
+        <p><b>@Model.Price $</b></p>
+    }
+
+    <input type="number" id="@Model.Id" placeholder="Select amount" />
+    <button type="button" id="@Model.Id" onclick="AddToBasketFunction(this)" class="btn btn-success">
+        + Add to basket
+    </button>
+</div>
+
+<script>
+    function AddToBasketFunction(item) {
+        var elementId = item.id + "#" + item.parentNode.childNodes[11].value+"#"+"@UserManager.GetUserId(User)";
+        var value = { value: elementId };
+        AddToBasket(value);
+    }
+    function AddToBasket(filters) {
+        $('#assets').html('<img src="https://wpamelia.com/wp-content/uploads/2018/11/ezgif-2-6d0b072c3d3f.gif" class="center" alt="Alternate Text" />');
+        $.ajax({
+            url: '/Basket/AddToBasket',
+            type: 'POST',
+            cache: false,
+            async: true,
+            dataType: "html",
+            data: filters
+        })
+            .done(function (result) {
+                alert("Added!");
+               // $('body').html(result);
+
+            }).fail(function (xhr) {
+                console.log('error : ' + xhr.status + ' - ' + xhr.statusText + ' - ' + xhr.responseText);
+            });
+
+    }
+</script>

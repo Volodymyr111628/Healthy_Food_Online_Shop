@@ -1,0 +1,45 @@
+﻿
+<div id="scrolList">
+    @Html.Partial("_Items")
+</div>
+
+
+
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script type="text/javascript">
+    $(function () {
+
+       
+
+        var page = 0;
+        
+        var _inCallback = false;
+        function loadItems() {
+            if (page > -1 && !_inCallback) {
+                _inCallback = true;
+                page++;
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/Catalog/Index/' + page,
+                    success: function (data, textstatus) {
+                        if (data != '') {
+                            $("#scrolList").append(data);
+                        }
+                        else {
+                            page = -1;
+                        }
+                        _inCallback = false;
+                    }
+                });
+            }
+        }
+        $(window).scroll(function () {
+            if ($(this.window).scrollTop() >= $(this.document).height() - $(this.window).height() - 1    ) {
+
+                loadItems();
+            }
+        });
+    })
+</script>

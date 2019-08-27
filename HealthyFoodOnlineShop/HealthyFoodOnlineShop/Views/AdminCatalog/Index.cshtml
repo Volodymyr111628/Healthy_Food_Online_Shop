@@ -1,0 +1,184 @@
+﻿@model HealthyFoodOnlineShop.Models.Catalog.AssetIndexModel
+
+
+<div id="assets">
+    <h3>Shop Catalog</h3>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Add new Item</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="AddItem">
+                        <form>
+                            <div class="form-group">
+                                <label for="ItemName">Item Name</label>
+                                <input class="form-control inp">
+                            </div>
+                            <div class="form-group">
+                                <label for="ItemPrice">Item Price</label>
+                                <input class="form-control inp">
+                            </div>
+                            <div class="form-group">
+                                <label for="ItemImageUrl">Item ImageUrl</label>
+                                <input class="form-control inp">
+                            </div>
+                            <div class="form-group">
+                                <label for="ItemType">Item Type</label>
+                                <input class="form-control inp">
+                            </div>
+                            <div class="form-group">
+                                <label for="ItemCountry">Item Country</label>
+                                <input class="form-control inp">
+                            </div>
+                            <div class="form-group">
+                                <label for="ItemDescription">Item Description</label>
+                                <input class="form-control inp">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" id="AddButton" class="btn btn-primary">+Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" id="ItemButton" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+        + Add new product
+    </button>
+    <div id="assetsTable">
+        <table class="table table-condensed" id="catalogIndexTable">
+            <thread>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th></th>
+                </tr>
+            </thread>
+            <tbody>
+                @foreach (var asset in Model.Assets)
+                {
+                    <tr class="AssetRow" id="@asset.Id">
+                        <td class="">
+                            <a asp-controller="Catalog" asp-action="Detail" asp-route-id="@asset.Id">
+                                <img src="@asset.ImageUrl" class="ImageCell" />
+                            </a>
+                        </td>
+                        <td class="">
+                            @asset.Name
+                        </td>
+                        <td class="">
+                            @asset.Price
+                        </td>
+                        <td>
+                            <input type="number" name="discount" value="@asset.Discount" />
+                            <button type="button" onclick="DiscountFunction(this)" class="btn btn-success">Set discount</button>
+                        </td>
+                        <td>
+                            <button type="button" onclick="DeleteFunction(this)" class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    var a = document.getElementById('AddItem');
+    var b = document.getElementById('AddButton');
+   
+    var inp = document.getElementsByClassName('inp');
+    b.onclick = function () {
+
+        var result = inp[0].value +
+            '#' + inp[1].value +
+            '#' + inp[2].value +
+            '#' + inp[3].value +
+            '#' + inp[4].value +
+            '#' + inp[5].value;
+        inp[0].value = '';
+        inp[1].value = '';
+        inp[2].value = '';
+        inp[3].value = '';
+        inp[4].value = '';
+        inp[5].value = '';
+        var value = { value: result };
+        $('body').removeClass('modal-open');
+        $('div').removeClass('modal-backdrop fade in');
+        AddNewItem(value);
+    };
+    function DeleteFunction(item) {
+        var elementId = item.parentNode.parentNode.id;
+        var value = { value: elementId };
+        DeleteElement(value);
+    }
+    function AddNewItem(filters) {
+        $('#assets').html('<img src="https://wpamelia.com/wp-content/uploads/2018/11/ezgif-2-6d0b072c3d3f.gif" class="center" alt="Alternate Text" />');
+        $.ajax({
+            url: '/AdminCatalog/AddNewItem',
+            type: 'POST',
+            cache: false,
+            async: true,
+            dataType: "html",
+            data: filters
+        })
+            .done(function (result) {
+
+                $('body').html(result);
+
+            }).fail(function (xhr) {
+                console.log('error : ' + xhr.status + ' - ' + xhr.statusText + ' - ' + xhr.responseText);
+            });
+
+    }
+    function DeleteElement(filters) {
+        $('#assets').html('<img src="https://wpamelia.com/wp-content/uploads/2018/11/ezgif-2-6d0b072c3d3f.gif" class="center" alt="Alternate Text" />');
+        $.ajax({
+            url: '/AdminCatalog/DeleteElement',
+            type: 'POST',
+            cache: false,
+            async: true,
+            dataType: "html",
+            data: filters
+        })
+            .done(function (result) {
+
+                $('body').html(result);
+
+            }).fail(function (xhr) {
+                console.log('error : ' + xhr.status + ' - ' + xhr.statusText + ' - ' + xhr.responseText);
+            });
+
+    }
+    function DiscountFunction(item) {
+        var elementId = item.parentNode.parentNode.id + "#" + item.parentNode.childNodes[1].value;
+        var value = { value: elementId };
+        ChangeDiscount(value);
+    }
+    function ChangeDiscount(filters) {
+        $('#assets').html('<img src="https://wpamelia.com/wp-content/uploads/2018/11/ezgif-2-6d0b072c3d3f.gif" class="center" alt="Alternate Text" />');
+        $.ajax({
+            url: '/AdminCatalog/ChangeDiscount',
+            type: 'POST',
+            cache: false,
+            async: true,
+            dataType: "html",
+            data: filters
+        })
+            .done(function (result) {
+
+                $('body').html(result);
+
+            }).fail(function (xhr) {
+                console.log('error : ' + xhr.status + ' - ' + xhr.statusText + ' - ' + xhr.responseText);
+            });
+
+    }
+</script>
